@@ -21,7 +21,7 @@ static const NSString *FlutterEnableAdvancedGesture = @"enableAdvancedGestureRec
     FlutterUxcamPlugin* instance = [[FlutterUxcamPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
 	
-	[UXCam pluginType:@"flutter" version:@"2.0.0"];
+	[UXCam pluginType:@"flutter" version:@"2.0.1"];
 }
 
 // The handler method - this is the entry point from the Dart code
