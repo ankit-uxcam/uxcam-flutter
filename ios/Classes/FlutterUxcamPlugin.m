@@ -23,8 +23,7 @@ static const NSString *FlutterExcludeScreens = @"excludeMentionedScreens";
 	
     FlutterUxcamPlugin* instance = [[FlutterUxcamPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
-	
-	[UXCam pluginType:@"flutter" version:@"2.0.1"];
+	[UXCam pluginType:@"flutter" version:@"2.1.0"];
 }
 
 // The handler method - this is the entry point from the Dart code
@@ -71,6 +70,34 @@ static const NSString *FlutterExcludeScreens = @"excludeMentionedScreens";
     [UXCam startWithConfiguration:config completionBlock:^(BOOL started) {
         result(@(started));
     }];
+}
+
+- (void)applyOcclusion:(FlutterMethodCall*)call result:(FlutterResult)result
+{
+    NSDictionary *occlusionJson = call.arguments[@"occlusion"];
+    if (occlusionJson && ![occlusionJson isKindOfClass:NSNull.class]) {
+        id <UXCamOcclusionSetting> setting = [UXCamOcclusion getSettingFromJson:occlusionJson];
+        if (setting)
+        {
+            [UXCam applyOcclusion:setting];
+        }
+    }
+}
+
+- (void)removeOcclusion:(FlutterMethodCall*)call result:(FlutterResult)result
+{
+    NSDictionary *occlusionJson = call.arguments[@"occlusion"];
+    if (occlusionJson && ![occlusionJson isKindOfClass:NSNull.class]) {
+        id <UXCamOcclusionSetting> setting = [UXCamOcclusion getSettingFromJson:occlusionJson];
+        if (setting)
+        {
+            [UXCam removeOcclusionOfType:setting.type];
+        }
+        else
+        {
+            [UXCam removeOcclusion];
+        }
+    }
 }
 
 - (void)updateConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result
@@ -163,8 +190,9 @@ static const NSString *FlutterExcludeScreens = @"excludeMentionedScreens";
 
 - (void)stopSessionAndUploadData:(FlutterMethodCall*)call result:(FlutterResult)result
 {
-	[UXCam stopSessionAndUploadData];
-	result(nil);
+	[UXCam stopSessionAndUploadData:^{
+           result(nil);
+    }];
 }
 
 - (void)allowShortBreakForAnotherApp:(FlutterMethodCall*)call result:(FlutterResult)result
